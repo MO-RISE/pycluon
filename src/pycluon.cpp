@@ -104,12 +104,12 @@ PYBIND11_MODULE(_pycluon, m) {
       .def_property(
           "sender_stamp",
           [](cluon::data::Envelope& self) { return self.senderStamp(); },
-          [](cluon::data::Envelope& self, u_int32_t sender_stamp) {
+          [](cluon::data::Envelope& self, uint32_t sender_stamp) {
             self.senderStamp(sender_stamp);
           });
 
   py::class_<cluon::OD4Session>(m, "OD4Session")
-      .def(py::init<u_int16_t,
+      .def(py::init<uint16_t,
                     std::function<void(cluon::data::Envelope && envelope)>>(),
            "CID"_a, "delegate"_a = nullptr)
       .def("send",
