@@ -1,0 +1,14 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "cmake.configureOnOpen": true,
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.environment": {
+        "CPM_SOURCE_CACHE": "${env:HOME}/.cache/CPM"
+    },
+    "cmake.ctestArgs": [
+        "--verbose"
+    ],
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true
+}

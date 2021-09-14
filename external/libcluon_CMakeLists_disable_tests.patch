@@ -1,0 +1,17 @@
+diff --git "a/libcluon/CMakeLists.txt" "b/libcluon/CMakeLists.txt"
+index a6d471e..227c8fb 100644
+--- "a/libcluon/CMakeLists.txt"
++++ "b/libcluon/CMakeLists.txt"
+@@ -211,8 +211,8 @@ endif()
+ ################################################################################
+ # Include Catch unit test framework (MUST follow this project's targets as
+ # ${LIBRARIES} is used in the cmake file for catch.hpp).
+-include_directories(../buildtools/xUnit)
+-if("${WEB}" STREQUAL "")
+-    include(xUnitCatch)
+-endif()
++# include_directories(../buildtools/xUnit)
++# if("${WEB}" STREQUAL "")
++#     include(xUnitCatch)
++# endif()
+ 
