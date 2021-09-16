@@ -25,4 +25,5 @@ setup(
         ]
     },
     install_requires=["protobuf", "protoc-wheel-0"],
+    python_requires=">=3.7",
 )

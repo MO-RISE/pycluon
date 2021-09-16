@@ -3,8 +3,6 @@ name: Release - Python Package
 on:
   release:
     types: [published]
-  push:
-    branches: [ building_wheels ]
 
 jobs:
   build-n-release:
@@ -27,14 +25,13 @@ jobs:
         run: python -m cibuildwheel .
         env:
           CIBW_BUILD_FRONTEND: "build"
-          CIBW_SKIP: "{pp*,cp36-*}"  # Skip building for pypy
+          CIBW_SKIP: "{pp*,cp36-*}"  # Skip building for pypy and cp36
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
-      # - name: Publish package to MORISE PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     user: ${{ secrets.MORISE_PYPI_USER }}
-      #     password: ${{ secrets.MORISE_PYPI_PASS }}
-      #     repository_url: https://pypi.mo.ri.se
-      #     packages_dir: wheelhouse
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: wheelhouse
