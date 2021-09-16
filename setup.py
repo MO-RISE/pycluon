@@ -10,7 +10,7 @@ setup(
     cmake_install_dir=".",
     include_package_data=True,
     package_data={
-        "pycluon": ["bin/*"],
+        "pycluon": ["bin/*", "resources/*"],
     },
     entry_points={
         "console_scripts": [

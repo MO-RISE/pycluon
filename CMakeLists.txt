@@ -71,3 +71,8 @@ install(TARGETS cluon-livefeed DESTINATION pycluon/bin)
 install(TARGETS cluon-rec2csv DESTINATION pycluon/bin)
 install(TARGETS cluon-replay DESTINATION pycluon/bin)
 
+install(
+  FILES ${cluon_SOURCE_DIR}/libcluon/resources/cluonDataStructures.odvd
+  RENAME cluon_data_structures.odvd
+  DESTINATION pycluon/resources)
+
