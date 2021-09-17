@@ -19,10 +19,11 @@ It also bundles the following command-line applications:
 
 ## Installation
 
-As of now:
-* Clone repo
-* Make sure you have a C/C++ compiler installed on your system
-* Run `pip install /path/to/pycluon/repo`
+`pycluon` is available on PyPI:
+
+```
+pip install pycluon
+```
 
 ## Examples
 
