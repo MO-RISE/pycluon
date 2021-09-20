@@ -1,6 +1,14 @@
 import time
+import gc
 
-from pycluon._pycluon import Envelope, OD4Session
+from pycluon._pycluon import (
+    Envelope,
+    OD4Session,
+    UDPSender,
+    UDPReceiver,
+    TCPConnection,
+    TCPServer,
+)
 
 
 def test_envelope_setters_getters():
@@ -74,3 +82,62 @@ def test_OD4Session_send_data_trigger():
     time.sleep(0.01)
 
     assert _called
+
+
+def test_UDP_ping():
+    received = {}
+
+    def receive_callback(data, sender, timestamp):
+        nonlocal received
+        received["data"] = data
+        received["sender"] = sender
+        received["timestamp"] = timestamp
+
+    r = UDPReceiver("127.0.0.1", 50032, receive_callback)
+
+    size, error = UDPSender("127.0.0.1", 50032).send("test")
+
+    assert size == 4
+    assert error == 0
+
+    time.sleep(0.1)
+
+    assert received["data"] == "test"
+
+
+def test_TCP_ping():
+    CALLED_ON_CONNECTION = False
+
+    def on_connection(connectee, connection):
+        nonlocal CALLED_ON_CONNECTION
+        CALLED_ON_CONNECTION = True
+        assert isinstance(connectee, str)
+        assert isinstance(connection, TCPConnection)
+
+        connection.send("test")
+
+    server = TCPServer(50033, on_connection)
+
+    CALLED_ON_CONNECTION_LOST = False
+
+    def on_connection_lost():
+        nonlocal CALLED_ON_CONNECTION_LOST
+        CALLED_ON_CONNECTION_LOST = True
+
+    CALLED_ON_MESSAGE = False
+
+    def on_message(data, timestamp):
+        nonlocal CALLED_ON_MESSAGE
+        CALLED_ON_MESSAGE = True
+        assert data == "test"
+
+    user = TCPConnection("127.0.0.1", 50033, on_message, on_connection_lost)
+
+    time.sleep(0.1)
+    assert CALLED_ON_CONNECTION
+    assert CALLED_ON_MESSAGE
+
+    del server
+    gc.collect()
+
+    assert CALLED_ON_CONNECTION_LOST
