@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <pybind11/chrono.h>
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -21,6 +22,10 @@
 
 #include "cluon/Envelope.hpp"
 #include "cluon/OD4Session.hpp"
+#include "cluon/TCPConnection.hpp"
+#include "cluon/TCPServer.hpp"
+#include "cluon/UDPReceiver.hpp"
+#include "cluon/UDPSender.hpp"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -30,6 +35,7 @@ PYBIND11_MODULE(_pycluon, m) {
     A python wrapper around libcluon
   )docs";
 
+  // Envelope
   py::class_<cluon::data::Envelope>(m, "Envelope")
       .def(py::init<>())
       .def_property(
@@ -108,6 +114,7 @@ PYBIND11_MODULE(_pycluon, m) {
             self.senderStamp(sender_stamp);
           });
 
+  // OD4Session
   py::class_<cluon::OD4Session>(m, "OD4Session")
       .def(py::init<uint16_t,
                     std::function<void(cluon::data::Envelope && envelope)>>(),
@@ -119,4 +126,43 @@ PYBIND11_MODULE(_pycluon, m) {
       .def("add_data_trigger", &cluon::OD4Session::dataTrigger)
       .def("set_time_trigger", &cluon::OD4Session::timeTrigger)
       .def("is_running", &cluon::OD4Session::isRunning);
+
+  // UDPReceiver
+  py::class_<cluon::UDPReceiver>(m, "UDPReceiver")
+      .def(py::init<
+               const std::string&, uint16_t,
+               std::function<void(std::string&&, std::string&&,
+                                  std::chrono::system_clock::time_point &&)>,
+               uint16_t>(),
+           "receive_from_address"_a, "receive_from_port"_a, "delegate"_a,
+           "local_send_from_port"_a = 0)
+      .def("is_running", &cluon::UDPReceiver::isRunning);
+
+  // UDPSender
+  py::class_<cluon::UDPSender>(m, "UDPSender")
+      .def(py::init<const std::string&, uint16_t>(), "send_to_address"_a,
+           "send_to_port"_a)
+      .def("send", &cluon::UDPSender::send)
+      .def("get_send_from_port", &cluon::UDPSender::getSendFromPort);
+
+  // TCPConnection
+  py::class_<cluon::TCPConnection, std::shared_ptr<cluon::TCPConnection>>(
+      m, "TCPConnection")
+      .def(py::init<
+               const std::string&, uint16_t,
+               std::function<void(std::string&&,
+                                  std::chrono::system_clock::time_point &&)>,
+               std::function<void()>>(),
+           "address"_a, "port"_a, "on_data_delegate"_a = nullptr,
+           "on_connection_lost_delegate"_a = nullptr)
+      .def("send", &cluon::TCPConnection::send)
+      .def("is_running", &cluon::TCPConnection::isRunning);
+
+  // TCPServer
+  py::class_<cluon::TCPServer>(m, "TCPServer")
+      .def(py::init<uint16_t, std::function<void(
+                                  std::string&&,
+                                  std::shared_ptr<cluon::TCPConnection>)>>(),
+           "port"_a, "new_connection_delegate"_a)
+      .def("is_running", &cluon::TCPServer::isRunning);
 }
