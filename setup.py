@@ -1,11 +1,26 @@
+import os
 from skbuild import setup
+
+# Utility function to read the README file.
+# Used for the long_description.  It's nice, because now 1) we have a top level
+# README file and 2) it's easier to type in the README file than to put a raw
+# string in below ...
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
 setup(
     name="pycluon",
     version="0.1.0",
+    license="Apache License 2.0",
     description="A python wrapper around libcluon",
+    long_description=read("README.md"),
+    long_description_content_type="text/markdown",
+    url="https://github.com/MO-RISE/pycluon",
     author="Fredrik Olsson",
+    author_email="fredrik.x.olsson@ri.se",
+    maintainer="Fredrik Olsson",
+    maintainer_email="fredrik.x.olsson@ri.se",
     packages=["pycluon"],
     cmake_install_dir=".",
     include_package_data=True,

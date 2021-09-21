@@ -5,6 +5,10 @@ A python wrapper around [libcluon](https://github.com/chrberger/libcluon). `pycl
 So far, `pycluon` wraps the following concepts from libcluon:
 * Envelope
 * OD4Session
+* UDPSender
+* UDPReceiver
+* TCPConnection
+* TCPServer
 
 It also bundles the following command-line applications:
 * protoc
@@ -16,6 +20,12 @@ It also bundles the following command-line applications:
 * cluon-livefeed
 * cluon-rec2csv
 * cluon-replay
+
+## Versioning
+
+| `pycluon` version | `libcluon` version |
+|------------------:|-------------------:|
+|             0.1.0 |            0.0.140 |
 
 ## Installation
 
@@ -69,3 +79,5 @@ session.add_data_trigger(13, callback)
 while session.is_running():
     time.sleep(0.01)
 ```
+
+See the [tests](tests/test_libcluon_wrappers.py#L87-L143) for usage of `UDPSender`, `UDPReceiver`, `TCPConnection` and `TCPServer`.
