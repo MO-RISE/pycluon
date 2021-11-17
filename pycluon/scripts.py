@@ -24,11 +24,12 @@ SCRIPTS = {
 
 
 def _run_in_subprocess(*args):
-    """Run a set of arguments in a subprocess"""
-    try:
-        subprocess.check_output(args, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as exc:
-        print(exc.output.decode())
+    """Run a set of arguments in a subprocess, continuously printing output"""
+    with subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True
+    ) as process:
+        for line in process.stdout:
+            print(line, end="")
 
 
 def run_script(argv):
