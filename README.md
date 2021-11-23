@@ -27,6 +27,7 @@ It also bundles the following command-line applications:
 |------------------:|-------------------:|
 |             0.1.0 |            0.0.140 |
 |             0.1.1 |            0.0.140 |
+|             0.1.2 |            0.0.140 |
 
 ## Installation
 
