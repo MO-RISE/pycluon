@@ -58,12 +58,12 @@ PYBIND11_MODULE(_pycluon, m) {
             double seconds = static_cast<double>(envelope.sent().seconds());
             double microseconds =
                 static_cast<double>(envelope.sent().microseconds());
-            return seconds + microseconds / 10e6;
+            return seconds + microseconds / 1e6;
           },
           [](cluon::data::Envelope& envelope, double timestamp) {
             size_t seconds = static_cast<size_t>(timestamp);
             size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 10e6);
+                (timestamp - static_cast<double>(seconds)) * 1e6);
 
             cluon::data::TimeStamp tmp;
             tmp.seconds(seconds);
@@ -76,12 +76,12 @@ PYBIND11_MODULE(_pycluon, m) {
             double seconds = static_cast<double>(envelope.received().seconds());
             double microseconds =
                 static_cast<double>(envelope.received().microseconds());
-            return seconds + microseconds / 10e6;
+            return seconds + microseconds / 1e6;
           },
           [](cluon::data::Envelope& envelope, double timestamp) {
             size_t seconds = static_cast<size_t>(timestamp);
             size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 10e6);
+                (timestamp - static_cast<double>(seconds)) * 1e6);
 
             cluon::data::TimeStamp tmp;
             tmp.seconds(seconds);
@@ -95,12 +95,12 @@ PYBIND11_MODULE(_pycluon, m) {
                 static_cast<double>(envelope.sampleTimeStamp().seconds());
             double microseconds =
                 static_cast<double>(envelope.sampleTimeStamp().microseconds());
-            return seconds + microseconds / 10e6;
+            return seconds + microseconds / 1e6;
           },
           [](cluon::data::Envelope& envelope, double timestamp) {
             size_t seconds = static_cast<size_t>(timestamp);
             size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 10e6);
+                (timestamp - static_cast<double>(seconds)) * 1e6);
 
             cluon::data::TimeStamp tmp;
             tmp.seconds(seconds);
