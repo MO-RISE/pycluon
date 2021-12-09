@@ -53,7 +53,6 @@ if(UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE rt)
   endif()
 endif()
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME _pycluon)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED true)
 

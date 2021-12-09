@@ -29,17 +29,14 @@ def test_envelope_setters_getters():
     assert e.serialized_data == b"muppet"
 
     assert isinstance(e.sent_at, datetime)
-    assert e.sent_at.timestamp() == 0.0
     e.sent_at = datetime.fromtimestamp(347238.438274)
     assert e.sent_at.timestamp() == 347238.438274
 
     assert isinstance(e.received_at, datetime)
-    assert e.received_at.timestamp() == 0.0
     e.received_at = datetime.fromtimestamp(347238.438274)
     assert e.received_at.timestamp() == 347238.438274
 
     assert isinstance(e.sampled_at, datetime)
-    assert e.sampled_at.timestamp() == 0.0
     e.sampled_at = datetime.fromtimestamp(347238.438274)
     assert e.sampled_at.timestamp() == 347238.438274
 
@@ -153,10 +150,10 @@ def test_TCP_ping():
     assert CALLED_ON_CONNECTION_LOST
 
 
-# @pytest.mark.skipif(
-#     sys.platform == "win32" or sys.platform == "darwin",
-#     reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
-# )
+@pytest.mark.skipif(
+    sys.platform == "win32" or sys.platform == "darwin",
+    reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
+)
 def test_shared_memory():
     sm = SharedMemory("trial.data", 10)
     sm2 = SharedMemory("trial.data")
