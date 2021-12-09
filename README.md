@@ -9,6 +9,7 @@ So far, `pycluon` wraps the following concepts from libcluon:
 * UDPReceiver
 * TCPConnection
 * TCPServer
+* SharedMemory
 
 It also bundles the following command-line applications:
 * protoc
@@ -29,6 +30,7 @@ It also bundles the following command-line applications:
 |             0.1.1 |            0.0.140 |
 |             0.1.2 |            0.0.140 |
 |             0.1.3 |            0.0.140 |
+|             0.2.0 |            0.0.140 |
 
 ## Installation
 
@@ -81,6 +83,33 @@ session.add_data_trigger(13, callback)
 
 while session.is_running():
     time.sleep(0.01)
+```
+
+**Write to a shared memory area**
+```python
+from datetime import datetime
+from pycluon import SharedMemory
+
+sm = SharedMemory("frame.argb", 640*480)
+
+sm.lock()
+sm.timestamp = datetime.now()
+sm.data = b"<bytes>"
+sm.unlock()
+sm.notify_all()
+```
+
+**Read from an existing shared memory area**
+```python
+from pycluon import SharedMemory
+
+sm = SharedMemory("frame.argb")
+
+sm.wait() # Wait for notification from writing process
+sm.lock()
+print(sm.timestamp)
+print(sm.data)
+sm.unlock()
 ```
 
 See the [tests](tests/test_libcluon_wrappers.py#L87-L143) for usage of `UDPSender`, `UDPReceiver`, `TCPConnection` and `TCPServer`.

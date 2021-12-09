@@ -17,18 +17,35 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <chrono>
+#include <filesystem>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "cluon/Envelope.hpp"
 #include "cluon/OD4Session.hpp"
+#include "cluon/SharedMemory.hpp"
 #include "cluon/TCPConnection.hpp"
 #include "cluon/TCPServer.hpp"
+#include "cluon/Time.hpp"
 #include "cluon/UDPReceiver.hpp"
 #include "cluon/UDPSender.hpp"
+#include "cluon/cluonDataStructures.hpp"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
+
+std::chrono::system_clock::time_point to_timepoint(
+    const cluon::data::TimeStamp& ts) {
+  return std::chrono::system_clock::time_point(
+      std::chrono::microseconds(cluon::time::toMicroseconds(ts)));
+}
+
+cluon::data::TimeStamp from_timepoint(
+    const std::chrono::system_clock::time_point& tp) {
+  return cluon::time::convert(tp);
+}
 
 PYBIND11_MODULE(_pycluon, m) {
   m.doc() = R"docs(
@@ -53,59 +70,31 @@ PYBIND11_MODULE(_pycluon, m) {
             self.serializedData(serialized_data);
           })
       .def_property(
-          "sent",
+          "sent_at",
           [](cluon::data::Envelope& envelope) {
-            double seconds = static_cast<double>(envelope.sent().seconds());
-            double microseconds =
-                static_cast<double>(envelope.sent().microseconds());
-            return seconds + microseconds / 1e6;
+            return to_timepoint(envelope.sent());
           },
-          [](cluon::data::Envelope& envelope, double timestamp) {
-            size_t seconds = static_cast<size_t>(timestamp);
-            size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 1e6);
-
-            cluon::data::TimeStamp tmp;
-            tmp.seconds(seconds);
-            tmp.microseconds(microseconds);
-            envelope.sent(std::move(tmp));
+          [](cluon::data::Envelope& envelope,
+             const std::chrono::system_clock::time_point& tp) {
+            envelope.sent(from_timepoint(tp));
           })
       .def_property(
-          "received",
+          "received_at",
           [](cluon::data::Envelope& envelope) {
-            double seconds = static_cast<double>(envelope.received().seconds());
-            double microseconds =
-                static_cast<double>(envelope.received().microseconds());
-            return seconds + microseconds / 1e6;
+            return to_timepoint(envelope.received());
           },
-          [](cluon::data::Envelope& envelope, double timestamp) {
-            size_t seconds = static_cast<size_t>(timestamp);
-            size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 1e6);
-
-            cluon::data::TimeStamp tmp;
-            tmp.seconds(seconds);
-            tmp.microseconds(microseconds);
-            envelope.received(std::move(tmp));
+          [](cluon::data::Envelope& envelope,
+             const std::chrono::system_clock::time_point& tp) {
+            envelope.received(from_timepoint(tp));
           })
       .def_property(
-          "sampled",
+          "sampled_at",
           [](cluon::data::Envelope& envelope) {
-            double seconds =
-                static_cast<double>(envelope.sampleTimeStamp().seconds());
-            double microseconds =
-                static_cast<double>(envelope.sampleTimeStamp().microseconds());
-            return seconds + microseconds / 1e6;
+            return to_timepoint(envelope.sampleTimeStamp());
           },
-          [](cluon::data::Envelope& envelope, double timestamp) {
-            size_t seconds = static_cast<size_t>(timestamp);
-            size_t microseconds = static_cast<size_t>(
-                (timestamp - static_cast<double>(seconds)) * 1e6);
-
-            cluon::data::TimeStamp tmp;
-            tmp.seconds(seconds);
-            tmp.microseconds(microseconds);
-            envelope.sampleTimeStamp(std::move(tmp));
+          [](cluon::data::Envelope& envelope,
+             const std::chrono::system_clock::time_point& tp) {
+            envelope.sampleTimeStamp(from_timepoint(tp));
           })
       .def_property(
           "sender_stamp",
@@ -165,4 +154,42 @@ PYBIND11_MODULE(_pycluon, m) {
                                   std::shared_ptr<cluon::TCPConnection>)>>(),
            "port"_a, "new_connection_delegate"_a)
       .def("is_running", &cluon::TCPServer::isRunning);
+
+  // SharedMemory
+  py::class_<cluon::SharedMemory>(m, "SharedMemory")
+      .def(py::init<const std::string&, uint32_t>(), "name"_a, "size"_a = 0)
+      .def("is_locked", &cluon::SharedMemory::isLocked)
+      .def("lock", &cluon::SharedMemory::lock)
+      .def("unlock", &cluon::SharedMemory::unlock)
+      .def("wait", &cluon::SharedMemory::wait,
+           py::call_guard<py::gil_scoped_release>())
+      .def("notify_all", &cluon::SharedMemory::notifyAll)
+      .def("valid", &cluon::SharedMemory::valid)
+      .def("name", &cluon::SharedMemory::name)
+      .def_property(
+          "timestamp",
+          [](cluon::SharedMemory& self) {
+            auto [flag, ts] = self.getTimeStamp();
+            if (!flag) {
+              throw pybind11::buffer_error(
+                  "The shared memory area is not locked!");
+            }
+            return to_timepoint(ts);
+          },
+          [](cluon::SharedMemory& self,
+             const std::chrono::system_clock::time_point& tp) {
+            if (!self.setTimeStamp(from_timepoint(tp))) {
+              throw pybind11::buffer_error(
+                  "The shared memory area is not locked!");
+            }
+          })
+
+      .def_property(
+          "data",
+          [](cluon::SharedMemory& self) {
+            return py::bytes(std::string(self.data(), self.size()));
+          },
+          [](cluon::SharedMemory& self, py::bytes data) {
+            strcpy(self.data(), std::string(data).c_str());
+          });
 }

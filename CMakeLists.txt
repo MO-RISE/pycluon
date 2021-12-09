@@ -48,8 +48,13 @@ target_include_directories(${PROJECT_NAME}
 
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads cluon-static)
+if(UNIX)
+  if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+  endif()
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME _pycluon)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED true)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED true)
 
 add_dependencies(${PROJECT_NAME} cluon-msc)
 add_dependencies(${PROJECT_NAME} cluon-OD4toStdout)
