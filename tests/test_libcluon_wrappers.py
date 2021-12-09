@@ -1,7 +1,7 @@
 import time
 import gc
+import sys
 import threading
-import multiprocessing
 from datetime import datetime
 
 import pytest
@@ -153,6 +153,10 @@ def test_TCP_ping():
     assert CALLED_ON_CONNECTION_LOST
 
 
+# @pytest.mark.skipif(
+#     sys.platform == "win32" or sys.platform == "darwin",
+#     reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
+# )
 def test_shared_memory():
     sm = SharedMemory("trial.data", 10)
     sm2 = SharedMemory("trial.data")

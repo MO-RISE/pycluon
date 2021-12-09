@@ -47,10 +47,13 @@ target_include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/include # libcluon "built-in" message specifications
 
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads cluon-static -static-libgcc -static-libstdc++)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads cluon-static)
 if(UNIX)
-  target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+  if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+  endif()
 endif()
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME _pycluon)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED true)
 

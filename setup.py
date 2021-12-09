@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="pycluon",
-    version="0.1.3",
+    version="0.2.0",
     license="Apache License 2.0",
     description="A python wrapper around libcluon",
     long_description=read("README.md"),
