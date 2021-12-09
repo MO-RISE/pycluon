@@ -47,9 +47,12 @@ target_include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/include # libcluon "built-in" message specifications
 
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads cluon-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads cluon-static -static-libgcc -static-libstdc++)
+if(UNIX)
+  target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME _pycluon)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED true)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED true)
 
 add_dependencies(${PROJECT_NAME} cluon-msc)
 add_dependencies(${PROJECT_NAME} cluon-OD4toStdout)
