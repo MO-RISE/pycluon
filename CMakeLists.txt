@@ -21,7 +21,7 @@ find_package(Threads REQUIRED)
 CPMAddPackage(
   NAME cluon
   GITHUB_REPOSITORY chrberger/libcluon
-  VERSION 0.0.140
+  VERSION 0.0.145
   SOURCE_SUBDIR libcluon
   EXCLUDE_FROM_ALL YES
   GIT_SHALLOW YES
