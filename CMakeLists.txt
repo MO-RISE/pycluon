@@ -31,7 +31,7 @@ CPMAddPackage(
 CPMAddPackage(
   NAME pybind11
   GITHUB_REPOSITORY pybind/pybind11
-  GIT_TAG v2.6.1
+  GIT_TAG v2.10.4
 )
 
 
