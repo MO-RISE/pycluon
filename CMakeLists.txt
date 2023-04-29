@@ -25,7 +25,7 @@ CPMAddPackage(
   SOURCE_SUBDIR libcluon
   EXCLUDE_FROM_ALL YES
   GIT_SHALLOW YES
-  PATCH_COMMAND git apply ${CMAKE_SOURCE_DIR}/external/libcluon_CMakeLists_disable_tests.patch
+  SKIP_TESTS 1
 )
 
 CPMAddPackage(
