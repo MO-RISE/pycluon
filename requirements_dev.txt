@@ -2,3 +2,4 @@ black
 pylint
 pytest
 build
+numpy

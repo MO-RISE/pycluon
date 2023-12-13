@@ -118,13 +118,13 @@ PYBIND11_MODULE(_pycluon, m) {
 
   // UDPReceiver
   py::class_<cluon::UDPReceiver>(m, "UDPReceiver")
-      .def(py::init<
-               const std::string&, uint16_t,
-               std::function<void(std::string&&, std::string&&,
-                                  std::chrono::system_clock::time_point &&)>,
-               uint16_t>(),
-           "receive_from_address"_a, "receive_from_port"_a, "delegate"_a,
-           "local_send_from_port"_a = 0)
+      .def(
+          py::init<const std::string&, uint16_t,
+                   std::function<void(std::string&&, std::string&&,
+                                      std::chrono::system_clock::time_point&&)>,
+                   uint16_t>(),
+          "receive_from_address"_a, "receive_from_port"_a, "delegate"_a,
+          "local_send_from_port"_a = 0)
       .def("is_running", &cluon::UDPReceiver::isRunning);
 
   // UDPSender
@@ -137,13 +137,13 @@ PYBIND11_MODULE(_pycluon, m) {
   // TCPConnection
   py::class_<cluon::TCPConnection, std::shared_ptr<cluon::TCPConnection>>(
       m, "TCPConnection")
-      .def(py::init<
-               const std::string&, uint16_t,
-               std::function<void(std::string&&,
-                                  std::chrono::system_clock::time_point &&)>,
-               std::function<void()>>(),
-           "address"_a, "port"_a, "on_data_delegate"_a = nullptr,
-           "on_connection_lost_delegate"_a = nullptr)
+      .def(
+          py::init<const std::string&, uint16_t,
+                   std::function<void(std::string&&,
+                                      std::chrono::system_clock::time_point&&)>,
+                   std::function<void()>>(),
+          "address"_a, "port"_a, "on_data_delegate"_a = nullptr,
+          "on_connection_lost_delegate"_a = nullptr)
       .def("send", &cluon::TCPConnection::send)
       .def("is_running", &cluon::TCPConnection::isRunning);
 
@@ -190,6 +190,7 @@ PYBIND11_MODULE(_pycluon, m) {
             return py::bytes(std::string(self.data(), self.size()));
           },
           [](cluon::SharedMemory& self, py::bytes data) {
-            strcpy(self.data(), std::string(data).c_str());
+            auto d = std::string(data);
+            memcpy(self.data(), d.data(), d.size());
           });
 }
