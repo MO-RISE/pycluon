@@ -4,6 +4,7 @@ import sys
 import threading
 from datetime import datetime
 
+import numpy as np
 import pytest
 
 from pycluon._pycluon import (
@@ -209,3 +210,20 @@ def test_shared_memory():
 
     time.sleep(0.1)
     assert not t.is_alive()
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32" or sys.platform == "darwin",
+    reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
+)
+def test_for_issue_17():
+    # Create image with one element equal to 0
+    img = np.ones((480, 640, 3), dtype=np.uint8)
+    img[240, 320, 0] = 0
+
+    sm = SharedMemory("img.rgb", img.size)
+
+    sm.lock()
+    sm.data = img.tobytes()
+    assert sm.data == img.tobytes()  # Fails but should pass
+    sm.unlock()
