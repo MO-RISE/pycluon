@@ -151,10 +151,6 @@ def test_TCP_ping():
     assert CALLED_ON_CONNECTION_LOST
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32" or sys.platform == "darwin",
-    reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
-)
 def test_shared_memory():
     sm = SharedMemory("trial.data", 10)
     sm2 = SharedMemory("trial.data")
@@ -212,10 +208,6 @@ def test_shared_memory():
     assert not t.is_alive()
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32" or sys.platform == "darwin",
-    reason="See issue https://github.com/MO-RISE/pycluon/issues/11",
-)
 def test_for_issue_17():
     # Create image with one element equal to 0
     img = np.ones((480, 640, 3), dtype=np.uint8)
